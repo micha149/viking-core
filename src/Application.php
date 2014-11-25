@@ -30,10 +30,13 @@ class Application implements HttpKernelInterface, TerminableInterface {
      */
     protected $container;
 
-    public function __construct() {
+    /**
+     * @param string $appRoot path to root of the app
+     */
+    public function __construct($appRoot) {
         $this->booted = false;
 
-        $this->appRoot = __DIR__ . "/../..";
+        $this->appRoot = $appRoot;
         $this->controllerRoot = $this->appRoot . '/controllers';
         $this->pluginsRoot = $this->appRoot . '/Plugins';
     }
