@@ -1,0 +1,67 @@
+parameters:
+    routing.controller_resolver.class: Viking\ControllerResolver
+    routing.router_listener.class: Symfony\Component\HttpKernel\EventListener\RouterListener
+    routing.nested_matcher.class: Symfony\Cmf\Component\Routing\NestedMatcher\NestedMatcher
+    routing.final_matcher.class: Symfony\Cmf\Component\Routing\NestedMatcher\UrlMatcher
+    routing.content_route_provider.class: Viking\Routing\ContentRouteProvider
+    routing.routes.class: Symfony\Component\Routing\RouteCollection
+    routing.request_context.class: Symfony\Component\Routing\RequestContext
+    routing.chain_router.class: Symfony\Cmf\Component\Routing\ChainRouter
+    routing.dynamic_router.class: Symfony\Cmf\Component\Routing\DynamicRouter
+    routing.enhancer.route_content_enhancer.class: Symfony\Cmf\Component\Routing\Enhancer\RouteContentEnhancer
+
+services:
+    routing.controller_resolver:
+        class: "%routing.controller_resolver.class%"
+        arguments: [ "@logger" ]
+
+    routing.router_listener:
+        class: "%routing.router_listener.class%"
+        arguments: [ "@routing.chain_router"]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    routing.router:
+        alias: routing.chain_router
+
+    routing.chain_router:
+        class: "%routing.chain_router.class%"
+
+    routing.dynamic_router:
+        class: "%routing.dynamic_router.class%"
+        arguments: [ "@routing.request_context", "@routing.nested_matcher", "@routing.generator", "", "@event_dispatcher", "@routing.content_route_provider" ]
+        tags:
+            - { name: "router", priority: 100 }
+
+    routing.request_context:
+        class: "%routing.request_context.class%"
+
+    routing.nested_matcher:
+        class: "%routing.nested_matcher.class%"
+        arguments: [ "@routing.content_route_provider", "@routing.final_matcher"]
+
+    routing.content_route_provider:
+        class: "%routing.content_route_provider.class%"
+        arguments: [ @content.page_repository ]
+
+    routing.final_matcher:
+        class: "%routing.final_matcher.class%"
+        arguments: [ "@routing.matcher.dummy_collection", "@routing.matcher.dummy_context"]
+
+    routing.matcher.dummy_collection:
+        class: Symfony\Component\Routing\RouteCollection
+        public: false
+
+    routing.matcher.dummy_context:
+        class: Symfony\Component\Routing\RequestContext
+        public: false
+
+    routing.generator:
+        class: Symfony\Cmf\Component\Routing\ContentAwareGenerator
+        arguments: [ "@routing.content_route_provider" ]
+
+    routing.enhancer.route_content_enhancer:
+        class: %routing.enhancer.route_content_enhancer.class%
+        arguments: [ "_route_object", "_content" ]
+        tags:
+            - { name: "route_enhancer" }

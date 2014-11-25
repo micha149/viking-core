@@ -1,0 +1,38 @@
+parameters:
+    templating.root_dir:                %app.root_dir%/templates
+    templating.template_listener.class: Viking\Templating\TemplateListener
+    templating.guesser.class:           Viking\Templating\TemplateGuesser
+    templating.engine.delegate.class:   Symfony\Component\Templating\DelegatingEngine
+    templating.engine.php.class:        Symfony\Component\Templating\PhpEngine
+    templating.name_parser.class:       Symfony\Component\Templating\TemplateNameParser
+    templating.loader.class:            Symfony\Component\Templating\Loader\FilesystemLoader
+
+services:
+    templating.guesser:
+        class: "%templating.guesser.class%"
+        arguments: [ "%templating.root_dir%/%%name%%" ]
+
+    templating.name_parser:
+        class: "%templating.name_parser.class%"
+
+    templating.loader:
+        class: "%templating.loader.class%"
+        arguments: [ "%templating.root_dir%/%%name%%" ]
+
+    templating.engine.php:
+        class: "%templating.engine.php.class%"
+        arguments: [ "@templating.name_parser", "@templating.loader" ]
+
+    templating.engine.delegate:
+        class: "%templating.engine.delegate.class%"
+        arguments:
+            - [ "@templating.engine.php" ]
+
+    templating.engine:
+        alias: templating.engine.delegate
+
+    templating.teplate_listener:
+        class: "%templating.template_listener.class%"
+        arguments: [ "@templating.engine", "@templating.guesser" ]
+        tags:
+            - { name: kernel.event_subscriber }

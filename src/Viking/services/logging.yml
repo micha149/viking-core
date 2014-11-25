@@ -1,0 +1,10 @@
+parameters:
+    logger.monolog.class: Monolog\Logger
+
+services:
+    logger:
+        alias: logger.monolog
+
+    logger.monolog:
+        class: "%logger.monolog.class%"
+        arguments: [ "app" ]

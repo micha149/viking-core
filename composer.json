@@ -1,0 +1,15 @@
+{
+    "name": "viking/core",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael van Engelshoven",
+            "email": "michael@van-engelshoven.de"
+        }
+    ],
+    "require": {},
+    "autoload": {
+    	"psr-4": {
+    		"Viking\\": "src/"
+    }
+}

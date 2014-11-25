@@ -1,0 +1,9 @@
+parameters:
+    content.page_repository.class: Viking\Content\PageRepository
+    content.root_dir: %app.root_dir%/content
+
+services:
+
+    content.page_repository:
+        class: %content.page_repository.class%
+        arguments: [ %content.root_dir% ]

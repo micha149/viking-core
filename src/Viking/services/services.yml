@@ -1,0 +1,48 @@
+imports:
+    - { resource: routing.yml }
+    - { resource: templating.yml }
+    - { resource: logging.yml }
+    - { resource: content.yml }
+
+parameters:
+    event_dispatcher.class: Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher
+    http_kernel.class:      Symfony\Component\HttpKernel\DependencyInjection\ContainerAwareHttpKernel
+    filesystem.class:       Symfony\Component\Filesystem\Filesystem
+    finder.class:           Symfony\Component\Finder\Finder
+    cache_warmer.class:     Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerAggregate
+    cache_clearer.class:    Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer
+    uri_signer.class:       Symfony\Component\HttpKernel\UriSigner
+
+services:
+
+    event_dispatcher:
+        class: "%event_dispatcher.class%"
+        arguments: [ "@service_container" ]
+
+    http_kernel:
+        class: "%http_kernel.class%"
+        arguments: [ "@event_dispatcher", "@service_container", "@routing.controller_resolver" ]
+
+    cache_warmer:
+        class: "%cache_warmer.class%"
+
+    cache_clearer:
+        class: "%cache_clearer.class%"
+
+    request:
+        scope: "request"
+        synthetic: true
+        synchronized: true
+
+    service_container:
+        synthetic: true
+
+    app:
+        synthetic: true
+
+    filesystem:
+        class: "%filesystem.class%"
+
+    uri_signer:
+        class: "%uri_signer.class%"
+        arguments: ["%app.secret%"]
