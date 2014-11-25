@@ -11,5 +11,6 @@
     "autoload": {
     	"psr-4": {
     		"Viking\\": "src/"
+        }
     }
 }
