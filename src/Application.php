@@ -76,6 +76,7 @@ class Application implements HttpKernelInterface, TerminableInterface {
         return array(
             'app.secret' => "Nice Secret",
             'app.root_dir' => $this->appRoot,
+            'app.debug' => true,
             'app.controller_dir' => $this->controllerRoot
         );
     }
