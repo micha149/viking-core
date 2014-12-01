@@ -57,7 +57,7 @@ class ContentRouteProvider implements RouteProviderInterface {
         $collection = new RouteCollection();
 
         try {
-            $page = $this->repository->findByUri($request->getPathInfo());
+            $page = $this->repository->findOneByUri($request->getPathInfo());
             $route = new PageRoute($page, array('_controller' => "Viking\\DefaultController::pageAction"));
             $collection->add($route->getRouteKey(), $route);
         } catch (ContentNotFoundException $e) {
