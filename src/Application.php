@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of Viking CMS
+ *
+ * (c) 2014 Michael van Engelshoven
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Viking;
 
@@ -23,6 +31,12 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Viking\Plugin\PluginLoader;
 use Viking\Templating\RegisterEnginePass;
 
+/**
+ * Class Application
+ *
+ * @author Michael van Engelshoven <michael@van-engelshoven.de>
+ * @package Viking
+ */
 class Application implements HttpKernelInterface, TerminableInterface {
 
     /**

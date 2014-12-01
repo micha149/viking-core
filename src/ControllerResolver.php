@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: micha149
- * Date: 18.11.14
- * Time: 19:47
+/*
+ * This file is part of Viking CMS
+ *
+ * (c) 2014 Michael van Engelshoven
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Viking;
@@ -11,6 +13,12 @@ namespace Viking;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver as BaseResolver;
 
+/**
+ * Class ControllerResolver
+ *
+ * @author Michael van Engelshoven <michael@van-engelshoven.de>
+ * @package Viking
+ */
 class ControllerResolver extends BaseResolver {
 
     protected function doGetArguments(Request $request, $controller, array $parameters)

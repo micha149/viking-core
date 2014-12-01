@@ -1,13 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: micha149
- * Date: 25.11.14
- * Time: 08:02
+/*
+ * This file is part of Viking CMS
+ *
+ * (c) 2014 Michael van Engelshoven
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Viking\Plugin;
-
 
 use Composer\Json\JsonFile;
 use Composer\Package\AliasPackage;
@@ -18,6 +19,12 @@ use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
+/**
+ * Class PluginLoader
+ *
+ * @author Michael van Engelshoven <michael@van-engelshoven.de>
+ * @package Viking\Plugin
+ */
 class PluginLoader {
 
     /**

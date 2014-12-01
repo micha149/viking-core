@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: micha149
- * Date: 22.11.14
- * Time: 20:33
+/*
+ * This file is part of Viking CMS
+ *
+ * (c) 2014 Michael van Engelshoven
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Viking\Routing;
@@ -16,6 +18,12 @@ use Symfony\Component\Routing\RouteCollection;
 use Viking\Content\Exception\ContentNotFoundException;
 use Viking\Content\PageRepository;
 
+/**
+ * Class ContentRouteProvider
+ *
+ * @author Michael van Engelshoven <michael@van-engelshoven.de>
+ * @package Viking\Routing
+ */
 class ContentRouteProvider implements RouteProviderInterface {
     /**
      * @var PageRepository
