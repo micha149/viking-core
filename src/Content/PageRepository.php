@@ -31,10 +31,17 @@ class PageRepository {
     private $path;
 
     /**
-     * @param string $path
+     * @var string
      */
-    public function __construct($path) {
+    private $startpage;
+
+    /**
+     * @param string $path
+     * @param string $startpage
+     */
+    public function __construct($path, $startpage) {
         $this->path = $path;
+        $this->startpage = $startpage;
     }
 
     /**
@@ -67,6 +74,11 @@ class PageRepository {
      * @return string
      */
     protected function createUriRegex($uri) {
+
+        if ($uri === '/') {
+            $uri = $this->startpage;
+        }
+
         $parts = explode('/', trim($uri, '/'));
 
         for ($i = 0; $i < count($parts); $i++) {
@@ -89,7 +101,13 @@ class PageRepository {
         }
 
         $directory = Path::makeRelative($directory, $this->path);
-        return trim(preg_replace('/(\/|^)([0-9]+-)?/', '/', $directory), '/');
+        $uri = trim(preg_replace('/(\/|^)([0-9]+-)?/', '/', $directory), '/');
+
+        if ($uri === $this->startpage) {
+            return '/';
+        }
+
+        return $uri;
     }
 
     /**

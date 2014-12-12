@@ -94,7 +94,8 @@ class Application implements HttpKernelInterface, TerminableInterface {
             'app.secret' => $this->config["secret"],
             'app.root_dir' => $this->config["root_dir"],
             'app.debug' => $this->config["debug"],
-            'app.controller_dir' => $this->config["root"] . '/' .$this->config["controller_folder"]
+            'app.controller_dir' => $this->config["root"] . '/' .$this->config["controller_folder"],
+            'app.startpage' => $this->config["startpage"]
         );
 
         return $config;

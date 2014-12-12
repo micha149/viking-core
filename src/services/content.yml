@@ -6,4 +6,4 @@ services:
 
     content.page_repository:
         class: %content.page_repository.class%
-        arguments: [ %content.root_dir% ]
+        arguments: [ %content.root_dir%, %app.startpage% ]
