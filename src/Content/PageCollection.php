@@ -33,6 +33,30 @@ class PageCollection implements \IteratorAggregate, \ArrayAccess {
         return $this;
     }
 
+    public function filter($callback) {
+        $collection = new static();
+
+        foreach ($this as $page) {
+            if (call_user_func($callback, $page)) {
+                $collection->add($page);
+            }
+        }
+
+        return $collection;
+    }
+
+    public function visible() {
+        return $this->filter(function($page) {
+            return $page->isVisible();
+        });
+    }
+
+    public function invisible() {
+        return $this->filter(function($page) {
+            return $page->isInvisible();
+        });
+    }
+
     /**
      * Return the collections iterator
      *
