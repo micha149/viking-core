@@ -11,8 +11,9 @@
 namespace Viking;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Viking\Content\Page;
+use Viking\Content\PageRepository;
+use Viking\Controller\Controller;
 
 /**
  * Class DefaultController
@@ -20,11 +21,16 @@ use Viking\Content\Page;
  * @author Michael van Engelshoven <michael@van-engelshoven.de>
  * @package Viking
  */
-class DefaultController {
+class DefaultController extends Controller {
 
     public function pageAction(Request $request, Page $page) {
+
+        /** @var $repository PageRepository */
+        $repository = $this->get('content.page_repository');
+
         return array(
-            "page" => $page
+            "page" => $page,
+            "pages" => $repository->findRootPages()
         );
     }
 } 

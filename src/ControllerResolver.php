@@ -10,6 +10,9 @@
 
 namespace Viking;
 
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver as BaseResolver;
 
@@ -20,6 +23,23 @@ use Symfony\Component\HttpKernel\Controller\ControllerResolver as BaseResolver;
  * @package Viking
  */
 class ControllerResolver extends BaseResolver {
+
+    /**
+     * @var ContainerInterface|null
+     */
+    protected $container;
+
+    /**
+     * Constructor.
+     *
+     * @param ContainerInterface $container
+     * @param LoggerInterface $logger A LoggerInterface instance
+     */
+    public function __construct(ContainerInterface $container, LoggerInterface $logger = null)
+    {
+        parent::__construct($logger);
+        $this->container = $container;
+    }
 
     protected function doGetArguments(Request $request, $controller, array $parameters)
     {
@@ -49,5 +69,15 @@ class ControllerResolver extends BaseResolver {
         }
 
         return $arguments;
+    }
+
+    protected function createController($controller) {
+        $callable = parent::createController($controller);
+
+        if ($callable[0] instanceof ContainerAwareInterface) {
+            $callable[0]->setContainer($this->container);
+        }
+
+        return $callable;
     }
 }

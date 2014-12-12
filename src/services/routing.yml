@@ -13,7 +13,7 @@ parameters:
 services:
     routing.controller_resolver:
         class: "%routing.controller_resolver.class%"
-        arguments: [ "@logger" ]
+        arguments: [ @service_container, @logger ]
 
     routing.router_listener:
         class: "%routing.router_listener.class%"

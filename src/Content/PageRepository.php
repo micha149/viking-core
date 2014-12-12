@@ -137,8 +137,19 @@ class PageRepository {
     public function findChildrenByUri($uri)
     {
         $path = $this->getDirectoryByUri($uri);
+        return $this->findChildrenByDirectory($path);
+    }
+
+    /**
+     * Resolves hild pages for a given directory path
+     *
+     * @param string $path
+     * @return PageCollection
+     */
+    protected function findChildrenByDirectory($path) {
         $finder = new Finder();
-        $finder->in($path)->directories();
+
+        $finder->in($path)->directories()->depth(0);
         $collection = new PageCollection();
 
         foreach($finder as $directory) {
@@ -197,5 +208,15 @@ class PageRepository {
         }
 
         throw new ContentNotFoundException('No suitable frontmatter file found in ' . $path);
+    }
+
+    /**
+     * Returns collection with pages on root level
+     *
+     * @return PageCollection
+     */
+    public function findRootPages()
+    {
+        return $this->findChildrenByDirectory($this->path);
     }
 } 
