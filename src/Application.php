@@ -17,6 +17,7 @@ use Composer\Repository\ComposerRepository;
 use Composer\Repository\InstalledFilesystemRepository;
 use Symfony\Cmf\Component\Routing\DependencyInjection\Compiler\RegisterRouteEnhancersPass;
 use Symfony\Cmf\Component\Routing\DependencyInjection\Compiler\RegisterRoutersPass;
+use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Scope;
@@ -28,8 +29,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Viking\Config\CoreConfiguration;
 use Viking\Plugin\PluginLoader;
 use Viking\Templating\RegisterEnginePass;
+use Webmozart\PathUtil\Path;
 
 /**
  * Class Application
@@ -45,14 +48,13 @@ class Application implements HttpKernelInterface, TerminableInterface {
     protected $container;
 
     /**
-     * @param string $appRoot path to root of the app
+     * @param array $config
      */
-    public function __construct($appRoot) {
+    public function __construct(array $config) {
         $this->booted = false;
 
-        $this->appRoot = $appRoot;
+        $this->config = $this->processConfig($config);
         $this->controllerRoot = $this->appRoot . '/controllers';
-        $this->pluginsRoot = $this->appRoot . '/Plugins';
     }
 
     protected function boot() {
@@ -80,19 +82,33 @@ class Application implements HttpKernelInterface, TerminableInterface {
         $configLoader = new YamlFileLoader($container, new FileLocator(__DIR__ . "/services"));
         $configLoader->load('services.yml');
 
-        $pluginLoader = new PluginLoader($container, new FileLocator($this->appRoot));
+        $pluginLoader = new PluginLoader($container, new FileLocator($this->config['root_dir']));
         $pluginLoader->load();
 
         return $container;
     }
 
     protected function getAppParameters() {
-        return array(
-            'app.secret' => "Nice Secret",
-            'app.root_dir' => $this->appRoot,
-            'app.debug' => true,
-            'app.controller_dir' => $this->controllerRoot
+
+        $config = array(
+            'app.secret' => $this->config["secret"],
+            'app.root_dir' => $this->config["root_dir"],
+            'app.debug' => $this->config["debug"],
+            'app.controller_dir' => $this->config["root"] . '/' .$this->config["controller_folder"]
         );
+
+        return $config;
+    }
+
+    /**
+     * Processes the given app configuration
+     * @param array $config
+     * @return array
+     */
+    protected function processConfig(array $config) {
+        $processor = new Processor();
+        $configuration = new CoreConfiguration();
+        return $processor->processConfiguration($configuration, $config);
     }
 
     /**
