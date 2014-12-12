@@ -64,7 +64,9 @@ class PageRepository {
             throw new ContentNotFoundException('No Page found for uri ' . $uri);
         }
 
-        return new Page($uri, $this->getPageTypeForPath(reset($directories)), null, $this);
+        $directory = reset($directories);
+
+        return new Page($uri, $this->getPageTypeForPath($directory), $this->getPageSortForPath($directory), $this);
     }
 
     /**
@@ -154,7 +156,7 @@ class PageRepository {
 
         foreach($finder as $directory) {
             $uri = $this->getUriByDirectory($directory);
-            $collection->add(new Page($uri, $this->getPageTypeForPath($directory), null, $this));
+            $collection->add(new Page($uri, $this->getPageTypeForPath($directory), $this->getPageSortForPath($directory), $this));
         }
 
         return $collection;
@@ -186,6 +188,7 @@ class PageRepository {
      *
      * @param string|SplFileInfo $path Path to page directory
      * @return string
+     * @throws ContentNotFoundException when no frontmatter file was found
      */
     protected function getPageTypeForPath($path)
     {
@@ -208,6 +211,23 @@ class PageRepository {
         }
 
         throw new ContentNotFoundException('No suitable frontmatter file found in ' . $path);
+    }
+
+    /**
+     * Returns the sort number for the page at the given path
+     *
+     * @param string $path
+     * @return int|null
+     */
+    protected function getPageSortForPath($path) {
+
+        preg_match('/(?:([0-9]+)-)?[^\/]+$/', $path, $matches);
+
+        if (!isset($matches[1])) {
+            return null;
+        }
+
+        return (int) $matches[1];
     }
 
     /**
