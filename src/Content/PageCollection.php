@@ -55,6 +55,86 @@ class PageCollection implements \IteratorAggregate, \ArrayAccess {
         return $collection;
     }
 
+    /**
+     * Returns a new collection with all pages of the current collection where the given field matches
+     * the given value. With the operator parameter we can define how the value of the field have to match.
+     * For example, all pages where the field "Title" begins with "Project" can be selected with the following
+     * call:
+     *
+     *    $pages->filterBy('Title', '^=', 'Project'); // All pages where "Title" begins with "Project"
+     *
+     * Supported operators:
+     *
+     * - Prefix operator `|=`
+     *   This is for field with hyphen seperated values, like slugs. It matches when the field begins with
+     *   the given value, followed by a hyphen (-)
+     *
+     * - Field contains operator `*=`
+     *   Matches pages where the field contains the given substring.
+     *
+     * - Field contains word operator `~=`
+     *   Matches pages where the field containing the given word, delimited by spaces.
+     *
+     * - Field ends with operator `$=`
+     *   Matches pages where the field end with the given value
+     *
+     * - Field equals operator `==`
+     *   Matches pages where the field is exactly the given value
+     *
+     * - Field not equals operator `!=`
+     *   Matches pages where the field is not equal the given value
+     *
+     * - Field starts with operator `^=`
+     *   Matches pages where the field starts with the given value
+     *
+     * @param string $field Field name
+     * @param string $operator The operator to check values. `==` when omitted.
+     * @param string $value The value to match
+     * @param bool $incasesensitive Case must not match
+     * @param bool $inverse True to get all pages which didn't match
+     * @throws UnexpectedArgumentException when a unexpected operator was given
+     * @return PageCollection
+     */
+    public function filterBy($field, $operator, $value = null, $incasesensitive = false, $inverse = false) {
+
+        if (!$value) {
+            $value = $operator;
+            $operator = '==';
+        }
+
+        switch($operator) {
+            case "!=":
+                $inverse = !$inverse;
+            case "==":
+                $pattern = "/^$value$/";
+                break;
+            case "|=":
+                $pattern = "/$value-/";
+                break;
+            case "*=":
+                $pattern = "/$value/";
+                break;
+            case "~=":
+                $pattern = "/(^|\\s)$value($|\\s)/";
+                break;
+            case "$=":
+                $pattern = "/".$value."$/";
+                break;
+            case "^=":
+                $pattern = "/^".$value."/";
+                break;
+            default:
+                throw new UnexpectedArgumentException('Unknown filter operator "' . $operator . '"');
+        }
+
+        if ($incasesensitive) {
+            $pattern .= 'i';
+        }
+
+        return $this->filter(function($page) use ($field, $pattern, $inverse) {
+            return $inverse != preg_match($pattern, trim($page[$field]));
+        });
+    }
 
     /**
      * Returns a new page collection with all visible pages of the current collection
