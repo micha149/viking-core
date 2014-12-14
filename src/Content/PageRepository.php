@@ -56,6 +56,7 @@ class PageRepository {
 
         $finder->in($this->path)
             ->path($this->createUriRegex($uri))
+            ->depth(count(explode('/', trim($uri, '/'))) - 1)
             ->directories();
 
         $directories = iterator_to_array($finder);
