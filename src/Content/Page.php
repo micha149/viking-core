@@ -11,6 +11,7 @@
 namespace Viking\Content;
 
 use KzykHys\FrontMatter\Document;
+use Viking\Content\Exception\ContentNotFoundException;
 use Viking\Content\Exception\UnexpectedDocumentAccessException;
 
 /**
@@ -150,6 +151,38 @@ class Page implements \ArrayAccess {
             $this->document = $this->repository->getDocumentForPage($this);
         }
         return $this->document;
+    }
+
+    /**
+     * Finds subpages by relative uri. This methods accepts one or more arguments.
+     * If one argument is passed, a Page insance will be returned, a PageCollection will
+     * be returned for more than one uris.
+     *
+     * @param string $uri ... One or more uris to resolve
+     * @throws ContentNotFoundException If a single uri is given and no page is found
+     * @return Page|PageCollection
+     */
+    public function find($uri)
+    {
+        $args = func_get_args();
+        $collection = new PageCollection();
+
+        foreach ($args as $uri) {
+            try {
+                $page = $this->repository->findOneByUri(str_replace('//', '/', $this->getUri() . '/' .  $uri));
+                $collection->add($page);
+            } catch (ContentNotFoundException $e) {
+                if (count($args) === 1) {
+                    throw $e;
+                }
+            }
+        }
+
+        if (count($args) === 1) {
+            return $collection[0];
+        }
+
+        return $collection;
     }
 
     /**

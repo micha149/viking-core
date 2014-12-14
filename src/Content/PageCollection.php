@@ -136,6 +136,7 @@ class PageCollection implements \IteratorAggregate, \ArrayAccess {
         });
     }
 
+
     /**
      * Returns a new page collection with all visible pages of the current collection
      *
@@ -257,5 +258,15 @@ class PageCollection implements \IteratorAggregate, \ArrayAccess {
     public function offsetUnset($offset)
     {
         unset($this->pages[$offset]);
+    }
+
+    /**
+     * Returns true if the collection is empty
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty($this->pages);
     }
 }
