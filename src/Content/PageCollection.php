@@ -10,6 +10,7 @@
 
 namespace Viking\Content;
 
+use Viking\Content\Exception\ContentNotFoundException;
 use Viking\Content\Exception\UnexpectedArgumentException;
 
 /**
@@ -136,6 +137,30 @@ class PageCollection implements \IteratorAggregate, \ArrayAccess {
         });
     }
 
+    /**
+     * Returns a new collection with all found subpages of pages in this collection.
+     *
+     * @param string $uri... One ore more uris to look up
+     * @return PageCollection
+     */
+    public function find($uri)
+    {
+        $args = func_get_args();
+        $collection = new static();
+
+        foreach ($this->pages as $page) {
+            try {
+                $found = call_user_func_array(array($page, 'find'), $args);
+                if ($found instanceof static) {
+                    $collection->merge($found);
+                } else {
+                    $collection->add($found);
+                }
+            } catch (ContentNotFoundException $e) {}
+        }
+
+        return $collection;
+    }
 
     /**
      * Returns a new page collection with all visible pages of the current collection
