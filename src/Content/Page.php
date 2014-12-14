@@ -169,7 +169,7 @@ class Page implements \ArrayAccess {
 
         foreach ($args as $uri) {
             try {
-                $page = $this->repository->findOneByUri(str_replace('//', '/', $this->getUri() . '/' .  $uri));
+                $page = $this->repository->findOneByUri(ltrim($this->getUri() . '/' .  ltrim($uri, '/'), '/'));
                 $collection->add($page);
             } catch (ContentNotFoundException $e) {
                 if (count($args) === 1) {
