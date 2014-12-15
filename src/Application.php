@@ -19,6 +19,7 @@ use Symfony\Cmf\Component\Routing\DependencyInjection\Compiler\RegisterRouteEnha
 use Symfony\Cmf\Component\Routing\DependencyInjection\Compiler\RegisterRoutersPass;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\DependencyInjection\Scope;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,8 +64,23 @@ class Application implements HttpKernelInterface, TerminableInterface {
             return;
         }
 
-        $this->container = $this->buildContainer();
-        $this->container->compile();
+        $file = $this->config['root_dir'] .'/cache/container.php';
+        $isDebug = $this->config['debug'];
+
+        if (!$isDebug && file_exists($file)) {
+            require_once $file;
+            $this->container = new \VikingContainer();
+        } else {
+            $this->container = $this->buildContainer();
+            $this->container->compile();
+            if (!$isDebug) {
+                $dumper = new PhpDumper($this->container);
+                file_put_contents(
+                    $file,
+                    $dumper->dump(array('class' => 'VikingContainer'))
+                );
+            }
+        }
 
         $this->booted = true;
     }
