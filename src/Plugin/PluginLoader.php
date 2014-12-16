@@ -16,8 +16,8 @@ use Composer\Package\Package;
 use Composer\Package\PackageInterface;
 use Composer\Repository\InstalledFilesystemRepository;
 use Symfony\Component\Config\FileLocatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 /**
  * Class PluginLoader
@@ -28,21 +28,23 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class PluginLoader {
 
     /**
-     * @var ContainerInterface
+     * @var ContainerBuilder
      */
     private $container;
+
     /**
      * @var FileLocatorInterface
      */
     private $locator;
 
-    public function __construct(ContainerInterface $container, FileLocatorInterface $locator) {
+    public function __construct(ContainerBuilder $container, FileLocatorInterface $locator) {
         $this->container = $container;
         $this->locator = $locator;
     }
 
     public function load() {
         $repo = $this->getComposerRepository();
+        $aliases = array();
 
         /** @var PackageInterface $package */
         foreach ($repo->getPackages() as $package) {
@@ -50,9 +52,14 @@ class PluginLoader {
                 continue;
             }
             if ('viking-plugin' === $package->getType()) {
-                $this->registerPlugin($package);
+                $plugin = $this->createPluginInstance($package);
+
+                $aliases[] = $plugin->getAlias();
+                $this->container->registerExtension($plugin);
             }
         }
+
+        $this->container->addCompilerPass(new MergeExtensionConfigurationPass($aliases));
     }
 
     /**
@@ -75,10 +82,18 @@ class PluginLoader {
         return $repo;
     }
 
-    protected function registerPlugin(PackageInterface $package)
+    /**
+     * @param PackageInterface $package
+     * @return PluginInterface
+     */
+    protected function createPluginInstance(PackageInterface $package)
     {
         $nameParts = explode('/', $package->getName());
-        $configLoader = new YamlFileLoader($this->container, $this->locator);
-        $configLoader->load('vendor/' . $package->getName() . '/'. $nameParts[1] . '.yml');
+        $canonicalName = ContainerBuilder::camelize(str_replace('-', '_', $nameParts[1]));
+        $class = 'Viking\\' . $canonicalName;
+        $path = $this->locator->locate('vendor/' . $package->getName() . '/' . $canonicalName . '.php');
+
+        require_once $path;
+        return new $class();
     }
 } 

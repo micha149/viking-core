@@ -90,16 +90,16 @@ class Application implements HttpKernelInterface, TerminableInterface {
         $container->set('app', $this);
         $container->addScope(new Scope('request'));
 
-        $container->addCompilerPass(new RegisterListenersPass(), PassConfig::TYPE_BEFORE_REMOVING);
-        $container->addCompilerPass(new RegisterRoutersPass('routing.chain_router', 'router'));
-        $container->addCompilerPass(new RegisterRouteEnhancersPass('routing.dynamic_router', 'route_enhancer'));
-        $container->addCompilerPass(new RegisterEnginePass());
-
         $configLoader = new YamlFileLoader($container, new FileLocator(__DIR__ . "/services"));
         $configLoader->load('services.yml');
 
         $pluginLoader = new PluginLoader($container, new FileLocator($this->config['root_dir']));
         $pluginLoader->load();
+
+        $container->addCompilerPass(new RegisterListenersPass(), PassConfig::TYPE_BEFORE_REMOVING);
+        $container->addCompilerPass(new RegisterRoutersPass('routing.chain_router', 'router'));
+        $container->addCompilerPass(new RegisterRouteEnhancersPass('routing.dynamic_router', 'route_enhancer'));
+        $container->addCompilerPass(new RegisterEnginePass());
 
         return $container;
     }
