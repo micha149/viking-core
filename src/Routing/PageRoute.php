@@ -69,6 +69,6 @@ class PageRoute extends Route implements RouteObjectInterface {
      */
     public function getRouteKey()
     {
-        return $this->page->getPath();
+        return $this->page->getUri();
     }
 }

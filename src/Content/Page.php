@@ -105,14 +105,6 @@ class Page implements \ArrayAccess {
     /**
      * @return string
      */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * @return string
-     */
     public function getUri()
     {
         return $this->uri;
