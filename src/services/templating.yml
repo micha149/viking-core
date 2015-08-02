@@ -10,14 +10,14 @@ parameters:
 services:
     templating.guesser:
         class: "%templating.guesser.class%"
-        arguments: [ "%templating.root_dir%/%%name%%" ]
+        arguments: [ "%templating.root_dir%" ]
 
     templating.name_parser:
         class: "%templating.name_parser.class%"
 
     templating.loader:
         class: "%templating.loader.class%"
-        arguments: [ "%templating.root_dir%/%%name%%" ]
+        arguments: [ "%templating.root_dir%" ]
 
     templating.engine.php:
         class: "%templating.engine.php.class%"

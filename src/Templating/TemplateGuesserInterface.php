@@ -18,6 +18,6 @@ namespace Viking\Templating;
  */
 interface TemplateGuesserInterface {
 
-    public function guessTemplateName();
+    public function guessTemplateName($pageType);
 
 } 

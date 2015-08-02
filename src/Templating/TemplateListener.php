@@ -60,12 +60,13 @@ class TemplateListener implements EventSubscriberInterface {
 
     public function onKernelController(FilterControllerEvent $event) {
         $request = $event->getRequest();
+        $pageType = $request->attributes->get('_content')->getType();
 
         if ($request->attributes->get('_template')) {
             return;
         }
 
-        $request->attributes->set('_template', $this->guesser->guessTemplateName());
+        $request->attributes->set('_template', $this->guesser->guessTemplateName($pageType));
     }
 
     public function onKernelView(GetResponseForControllerResultEvent $event) {

@@ -9,6 +9,7 @@
  */
 
 namespace Viking\Templating;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class TemplateGuesser
@@ -32,8 +33,17 @@ class TemplateGuesser implements TemplateGuesserInterface
         $this->templateFolder = $templateFolder;
     }
 
-    public function guessTemplateName()
+    public function guessTemplateName($pageType)
     {
+        $finder = new Finder();
+
+        $finder->in($this->templateFolder)->name($pageType . '.*');
+        $first = reset(iterator_to_array($finder->getIterator()));
+
+        if ($first) {
+            return $first->getBaseName();
+        }
+
         return 'default.html.twig';
     }
 }
